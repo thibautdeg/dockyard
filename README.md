@@ -1,12 +1,12 @@
-# ⚓ Dockyard
+# ⚓ Dockyard Legacy
 
-PHP project setup tool with automatic port assignment, SSL certificates, local domain configuration, and **multi-PHP version support** (PHP 5.6 → 8.4).
+PHP project setup tool with automatic port assignment, SSL certificates, local domain configuration, and **legacy PHP version support** (PHP 5.6 → 7.3).
 
 Unlike Laravel Sail, Dockyard works for **any PHP project**: Laravel, CakePHP, or generic legacy projects.
 
 ## Features
 
-- 🐘 **Multi-PHP support** — PHP 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4
+- 🐘 **Legacy PHP support** — PHP 5.6, 7.0, 7.1, 7.2, 7.3
 - 🍰 **Multi-framework** — Laravel, CakePHP, or generic PHP projects
 - 🚢 **Automatic port assignment** — intelligent port allocation across all your projects
 - 🔍 **Port conflict detection** — prevents conflicts with running services
@@ -54,7 +54,7 @@ dockyard init
 
 The wizard will guide you through:
 
-1. **PHP version** — auto-detected from `composer.json` or `.php-version`, with override
+1. **PHP version** — auto-detected from `composer.json` or `.php-version`, then normalized and validated to legacy range
 2. **Project type** — auto-detected (Laravel / CakePHP / generic), with override
 3. **Document root** — auto-detected per project type (`public`, `webroot`, etc.)
 4. **Services** — optional MySQL, Redis
@@ -83,7 +83,7 @@ Dockyard detects your project type and PHP version automatically:
 | Signal | Detected as |
 |---|---|
 | `artisan` file present | Laravel |
-| `bin/cake` or `"cakephp/cakephp"` in composer | CakePHP |
+| `bin/cake`, `"cakephp/cakephp"` in composer, or klassieke CakePHP2 mappen (`Config`, `Controller`, `Model`, `View`, `webroot`) | CakePHP |
 | `composer.json` `require.php` constraint | PHP version |
 | `.php-version` file | PHP version |
 
@@ -109,9 +109,13 @@ The `.dockyard/config.yml` is meant to be committed so teammates can regenerate 
 
 ### PHP version support
 
-Dockyard uses official Docker Hub `php:X.X-fpm` images combined with nginx. This means it supports any PHP version Docker Hub provides, including legacy versions like PHP 5.6 and 7.0.
+Dockyard uses official Docker Hub `php:X.X-fpm` images combined with nginx, and targets legacy PHP projects only.
 
 The Dockerfile is generated dynamically and handles differences in extension installation between PHP versions (e.g. `gd` configure flags changed between versions).
+
+Supported range: **5.6 → 7.3**.
+
+If a detected PHP version falls outside that range (for example `5.3` or `8.2`), Dockyard suggests the nearest supported legacy version in the wizard.
 
 ### Port assignment strategy
 
@@ -142,7 +146,7 @@ Dockyard maintains a global registry at `~/.config/dockyard/projects.conf`:
 ```ini
 [my-project]
 path=/path/to/project
-php=7.4
+php=7.3
 type=cakephp
 APP_PORT=8001
 FORWARD_DB_PORT=3301
@@ -174,6 +178,11 @@ dockyard/
 ├── dockyard.sh     ← main script
 └── install.sh      ← installer
 ```
+
+## Legacy defaults
+
+- MySQL service uses `mysql:5.7` for better compatibility with older frameworks and drivers.
+- If detected PHP version is not in the supported legacy range, Dockyard asks for a compatible version.
 
 ## License
 
