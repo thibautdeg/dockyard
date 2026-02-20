@@ -2,6 +2,11 @@
 
 All notable changes to Dockyard will be documented in this file.
 
+## [0.1.2] - 2026-02-20
+
+### Fixed
+- `mysql:5.7` has no ARM64 image — added `platform: linux/amd64` to the MySQL service for Apple Silicon compatibility (runs via Rosetta)
+
 ## [0.1.1] - 2026-02-20
 
 ### Fixed

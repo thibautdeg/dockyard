@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly VERSION="0.1.1"
+readonly VERSION="0.1.2"
 readonly REGISTRY_DIR="${HOME}/.config/dockyard"
 readonly REGISTRY_FILE="${REGISTRY_DIR}/projects.conf"
 
@@ -475,6 +475,7 @@ generate_docker_compose() {
 
   mysql:
     image: mysql:5.7
+    platform: linux/amd64
     container_name: ${project}_mysql
     restart: unless-stopped
     environment:
