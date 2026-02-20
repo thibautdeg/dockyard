@@ -742,9 +742,10 @@ prompt_select() {
     shift
     local options=("$@")
 
-    echo -e "${CYAN}?${NC}  ${question}"
+    # Display goes to stderr so it remains visible when captured via $()
+    echo -e "${CYAN}?${NC}  ${question}" >&2
     for i in "${!options[@]}"; do
-        echo -e "   ${BOLD}$((i+1)))${NC} ${options[$i]}"
+        echo -e "   ${BOLD}$((i+1)))${NC} ${options[$i]}" >&2
     done
 
     while true; do
@@ -753,7 +754,7 @@ prompt_select() {
             echo "${options[$((choice-1))]}"
             return
         fi
-        log_warn "Invalid choice, please enter a number between 1 and ${#options[@]}"
+        log_warn "Invalid choice, please enter a number between 1 and ${#options[@]}" >&2
     done
 }
 
