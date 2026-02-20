@@ -1127,7 +1127,7 @@ cmd_info() {
 
 cmd_update() {
     log_step "Checking for updates..."
-    local latest_url="https://raw.githubusercontent.com/YOUR_USERNAME/dockyard/main/dockyard.sh"
+    local latest_url="https://raw.githubusercontent.com/thibautdeg/dockyard/main/dockyard.sh"
     local tmp_file
     tmp_file=$(mktemp)
 

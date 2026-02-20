@@ -8,7 +8,7 @@ set -euo pipefail
 
 readonly INSTALL_DIR="${HOME}/.local/bin"
 readonly SCRIPT_NAME="dockyard"
-readonly REPO_URL="https://raw.githubusercontent.com/YOUR_USERNAME/dockyard/main/dockyard.sh"
+readonly REPO_URL="https://raw.githubusercontent.com/thibautdeg/dockyard/main/dockyard.sh"
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'

@@ -25,7 +25,7 @@ Unlike Laravel Sail, Dockyard works for **any PHP project**: Laravel, CakePHP, o
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dockyard/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/thibautdeg/dockyard/main/install.sh | bash
 ```
 
 After installation, restart your terminal or run:
@@ -37,7 +37,7 @@ source ~/.zshrc  # or ~/.bashrc
 ### Manual installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/dockyard/main/dockyard.sh \
+curl -fsSL https://raw.githubusercontent.com/thibautdeg/dockyard/main/dockyard.sh \
     -o ~/.local/bin/dockyard
 chmod +x ~/.local/bin/dockyard
 ```
