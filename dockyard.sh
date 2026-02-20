@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly VERSION="0.1.0"
+readonly VERSION="0.1.1"
 readonly REGISTRY_DIR="${HOME}/.config/dockyard"
 readonly REGISTRY_FILE="${REGISTRY_DIR}/projects.conf"
 

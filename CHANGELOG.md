@@ -2,6 +2,11 @@
 
 All notable changes to Dockyard will be documented in this file.
 
+## [0.1.1] - 2026-02-20
+
+### Fixed
+- `prompt_select` question and options were invisible when captured via `$()` — display output now goes to stderr
+
 ## [0.1.0] - 2026-02-20
 
 ### Added
