@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly VERSION="0.1.4"
+readonly VERSION="0.1.6"
 readonly REGISTRY_DIR="${HOME}/.config/dockyard"
 readonly REGISTRY_FILE="${REGISTRY_DIR}/projects.conf"
 
@@ -313,6 +313,10 @@ detect_services() {
     echo "${services[*]}"
 }
 
+cakephp_core_present() {
+    [[ -f "Vendor/cakephp/cakephp/lib/Cake/bootstrap.php" ]]
+}
+
 # =============================================================================
 # Docker Compose generation
 # =============================================================================
@@ -364,9 +368,14 @@ NGINX
 generate_dockerfile_php() {
     local php_version="$1"
 
-    # Composer 2.3+ requires PHP 7.2+; use 2.2 (LTS) for older versions
+    # Composer compatibility for legacy PHP:
+    # - PHP 5.6: Composer 1 (plugin-api v1)
+    # - PHP 7.0/7.1: Composer 2.2 LTS
+    # - PHP 7.2/7.3: Composer 2
     local composer_tag="2"
-    if [[ "$php_version" == "5.6" ]] || [[ "$php_version" == "7.0" ]] || [[ "$php_version" == "7.1" ]]; then
+    if [[ "$php_version" == "5.6" ]]; then
+        composer_tag="1"
+    elif [[ "$php_version" == "7.0" ]] || [[ "$php_version" == "7.1" ]]; then
         composer_tag="2.2"
     fi
 
@@ -1041,6 +1050,16 @@ CONFIG
         docker compose up -d --build
         log_success "Containers started"
 
+        if [[ -f "composer.json" ]]; then
+            if prompt_yn "Run composer install (no-dev) in PHP container now?" "y"; then
+                if docker compose exec -T php composer install --no-interaction --prefer-dist --no-dev; then
+                    log_success "Composer dependencies installed"
+                else
+                    log_warn "Composer install failed. You can retry with: docker compose exec php composer install --no-dev"
+                fi
+            fi
+        fi
+
         if [[ "$project_type" == "laravel" ]]; then
             if prompt_yn "Run Laravel setup (key:generate, migrate)?" "y"; then
                 docker compose exec php php artisan key:generate || true
@@ -1048,6 +1067,11 @@ CONFIG
                 log_success "Laravel setup complete"
             fi
         fi
+    fi
+
+    if [[ "$project_type" == "cakephp" ]] && ! cakephp_core_present; then
+        log_warn "CakePHP core not found at Vendor/cakephp/cakephp/lib/Cake/bootstrap.php"
+        log_warn "Run composer install (preferably inside the PHP container): docker compose exec php composer install"
     fi
 
     # ── Summary ───────────────────────────────────────────────────────────────

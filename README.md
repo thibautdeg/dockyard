@@ -61,6 +61,7 @@ The wizard will guide you through:
 5. **Domain registration** — optional `.test` domain via Herd/Valet
 6. **Protocol** — HTTPS (with SSL symlinks) or HTTP
 7. **Post-setup** — optionally build containers and run framework setup commands
+8. **Dependencies** — optional `composer install` inside the PHP container (recommended for legacy CakePHP/Laravel projects)
 
 ### Commands
 
@@ -183,6 +184,9 @@ dockyard/
 
 - MySQL service uses `mysql:5.7` for better compatibility with older frameworks and drivers.
 - If detected PHP version is not in the supported legacy range, Dockyard asks for a compatible version.
+- PHP 5.6 images use Composer 1 for compatibility with older lockfiles (`composer-plugin-api ^1.0`).
+- After startup, Dockyard can run `composer install --no-dev` inside the PHP container.
+- For CakePHP projects, Dockyard warns if Cake core is missing at `Vendor/cakephp/cakephp/lib/Cake/bootstrap.php`.
 
 ## License
 

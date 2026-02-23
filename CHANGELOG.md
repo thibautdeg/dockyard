@@ -2,6 +2,18 @@
 
 All notable changes to Dockyard will be documented in this file.
 
+## [0.1.6] - 2026-02-23
+
+### Fixed
+- PHP 5.6 images now use Composer 1 to support legacy lockfiles/packages that require `composer-plugin-api ^1.0`
+- Post-setup Composer step now runs `composer install --no-dev` by default to avoid legacy dev-dependency incompatibilities
+
+## [0.1.5] - 2026-02-23
+
+### Added
+- Optional post-start `composer install` step in `dockyard init` (runs inside the PHP container)
+- CakePHP legacy core presence check with explicit warning when `Vendor/cakephp/cakephp/lib/Cake/bootstrap.php` is missing
+
 ## [0.1.4] - 2026-02-23
 
 ### Fixed
