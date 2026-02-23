@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly VERSION="0.1.3"
+readonly VERSION="0.1.4"
 readonly REGISTRY_DIR="${HOME}/.config/dockyard"
 readonly REGISTRY_FILE="${REGISTRY_DIR}/projects.conf"
 
@@ -377,14 +377,19 @@ WORKDIR /var/www/html
 
 HEADER
 
-    # Fix EOL Debian apt mirrors — Jessie (5.6), Stretch (7.0/7.1), Buster (7.2/7.3)
+    # Fix EOL Debian apt mirrors + signature/valid-until checks for archived repos
     case "$php_version" in
         5.6)
             cat <<'APTFIX'
-# Fix EOL Debian Jessie apt mirrors
+# Fix EOL Debian apt mirrors (PHP 5.6 images may resolve to old Jessie/Stretch variants depending on arch)
 RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-    && sed -i '/jessie-updates/d' /etc/apt/sources.list \
-    && sed -i '/security.debian.org/d' /etc/apt/sources.list
+    && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+    && sed -i '/-updates/d' /etc/apt/sources.list \
+    && printf '%s\n' \
+       'Acquire::Check-Valid-Until "false";' \
+       'Acquire::AllowInsecureRepositories "true";' \
+       'Acquire::AllowDowngradeToInsecureRepositories "true";' \
+       > /etc/apt/apt.conf.d/99archive
 
 APTFIX
             ;;
@@ -393,7 +398,12 @@ APTFIX
 # Fix EOL Debian Stretch apt mirrors
 RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
     && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
-    && sed -i '/stretch-updates/d' /etc/apt/sources.list
+    && sed -i '/-updates/d' /etc/apt/sources.list \
+    && printf '%s\n' \
+       'Acquire::Check-Valid-Until "false";' \
+       'Acquire::AllowInsecureRepositories "true";' \
+       'Acquire::AllowDowngradeToInsecureRepositories "true";' \
+       > /etc/apt/apt.conf.d/99archive
 
 APTFIX
             ;;
@@ -402,7 +412,12 @@ APTFIX
 # Fix EOL Debian Buster apt mirrors
 RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
     && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
-    && sed -i '/buster-updates/d' /etc/apt/sources.list
+    && sed -i '/-updates/d' /etc/apt/sources.list \
+    && printf '%s\n' \
+       'Acquire::Check-Valid-Until "false";' \
+       'Acquire::AllowInsecureRepositories "true";' \
+       'Acquire::AllowDowngradeToInsecureRepositories "true";' \
+       > /etc/apt/apt.conf.d/99archive
 
 APTFIX
             ;;
@@ -413,7 +428,8 @@ APTFIX
         5.6)
             # gd uses old --with-*-dir flags; mcrypt is a built-in extension
             cat <<'EXTS'
-RUN apt-get update && apt-get install -y \
+RUN apt-get -o Acquire::Check-Valid-Until=false update \
+    && apt-get install -y --allow-unauthenticated \
         git unzip libpng-dev libzip-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath gd zip mcrypt
@@ -423,7 +439,8 @@ EXTS
         7.0|7.1)
             # gd uses old --with-*-dir flags; mcrypt still available as built-in
             cat <<'EXTS'
-RUN apt-get update && apt-get install -y \
+RUN apt-get -o Acquire::Check-Valid-Until=false update \
+    && apt-get install -y --allow-unauthenticated \
         git unzip libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip intl opcache mcrypt
@@ -433,7 +450,8 @@ EXTS
         7.2|7.3)
             # gd still uses old --with-freetype-dir/--with-jpeg-dir flags (new flags only from PHP 7.4+); mcrypt removed in 7.2
             cat <<'EXTS'
-RUN apt-get update && apt-get install -y \
+RUN apt-get -o Acquire::Check-Valid-Until=false update \
+    && apt-get install -y --allow-unauthenticated \
         git unzip libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip intl opcache

@@ -2,6 +2,13 @@
 
 All notable changes to Dockyard will be documented in this file.
 
+## [0.1.4] - 2026-02-23
+
+### Fixed
+- Improved EOL Debian archive handling for legacy PHP images (5.6 → 7.3) by removing `*-updates` sources and forcing archive-compatible apt settings
+- Added apt archive policy (`Check-Valid-Until=false` + insecure archive allowances) to prevent signature/metadata failures on old Debian mirrors
+- Updated legacy extension install steps to use `apt-get ... --allow-unauthenticated` so PHP 5.6/7.x builds complete reliably on archived repositories
+
 ## [0.1.3] - 2026-02-20
 
 ### Fixed
