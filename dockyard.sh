@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-readonly VERSION="0.1.2"
+readonly VERSION="0.1.3"
 readonly REGISTRY_DIR="${HOME}/.config/dockyard"
 readonly REGISTRY_FILE="${REGISTRY_DIR}/projects.conf"
 
@@ -392,7 +392,7 @@ APTFIX
             cat <<'APTFIX'
 # Fix EOL Debian Stretch apt mirrors
 RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-    && sed -i 's|security.debian.org|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+    && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
     && sed -i '/stretch-updates/d' /etc/apt/sources.list
 
 APTFIX
@@ -401,7 +401,7 @@ APTFIX
             cat <<'APTFIX'
 # Fix EOL Debian Buster apt mirrors
 RUN sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-    && sed -i 's|security.debian.org|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+    && sed -i 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
     && sed -i '/buster-updates/d' /etc/apt/sources.list
 
 APTFIX
@@ -414,7 +414,7 @@ APTFIX
             # gd uses old --with-*-dir flags; mcrypt is a built-in extension
             cat <<'EXTS'
 RUN apt-get update && apt-get install -y \
-        libpng-dev libzip-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
+        git unzip libpng-dev libzip-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath gd zip mcrypt
 
@@ -424,18 +424,18 @@ EXTS
             # gd uses old --with-*-dir flags; mcrypt still available as built-in
             cat <<'EXTS'
 RUN apt-get update && apt-get install -y \
-        libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
+        git unzip libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev libmcrypt-dev \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip intl opcache mcrypt
 
 EXTS
             ;;
         7.2|7.3)
-            # gd uses new --with-freetype / --with-jpeg flags; mcrypt removed in 7.2
+            # gd still uses old --with-freetype-dir/--with-jpeg-dir flags (new flags only from PHP 7.4+); mcrypt removed in 7.2
             cat <<'EXTS'
 RUN apt-get update && apt-get install -y \
-        libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+        git unzip libpng-dev libzip-dev libicu-dev libpq-dev zlib1g-dev libfreetype6-dev libjpeg62-turbo-dev \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd zip intl opcache
 
 EXTS

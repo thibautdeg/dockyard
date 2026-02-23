@@ -2,6 +2,12 @@
 
 All notable changes to Dockyard will be documented in this file.
 
+## [0.1.3] - 2026-02-20
+
+### Fixed
+- Buster and Stretch apt security URL became `archive.debian.org/debian-security/debian-security` (double path) — sed pattern now matches the full `security.debian.org/debian-security` hostname+path
+- `--with-freetype`/`--with-jpeg` gd flags are only valid from PHP 7.4+ — PHP 7.2 and 7.3 now correctly use `--with-freetype-dir`/`--with-jpeg-dir`
+
 ## [0.1.2] - 2026-02-20
 
 ### Fixed
